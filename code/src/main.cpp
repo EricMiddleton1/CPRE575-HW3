@@ -85,7 +85,6 @@ private:
 	bool pathBreak_;
 };
 
-
 int main(int argc, char* argv[]) {
 	
 	if(argc != 2) {
@@ -127,12 +126,24 @@ int main(int argc, char* argv[]) {
 	int pelletTime = 6;
 
 	Trackable player{{25, 100, 100}, {35, 255, 255}, {0, 255, 255}, 10};
-	std::vector<Trackable> ghosts = {
+	std::vector<Trackable> ghosts {
 		{{80, 100, 200}, {100, 255, 255}, {255, 255, 0}, 20},		//Blue
-		{{140, 40, 200}, {170, 80, 255}, {239, 185, 255}, 20},	//Pink
-		{{10, 140, 200}, {30, 160, 255}, {95, 177, 243}, 20},		//Orange
+		{{140, 60, 200}, {170, 80, 255}, {239, 185, 255}, 20},	//Pink
+		{{10, 140, 200}, {30, 180, 255}, {95, 177, 243}, 20},		//Orange
 		{{0, 200, 200}, {10, 255, 255}, {0, 0, 255}, 20}				//Red
 	};
+
+	std::vector<cv::Mat> digits;
+	for(int i = 0; i < 10; ++i) {
+		auto digit = cv::imread(std::string("../input/part4/digits/") + std::to_string(i)
+			+ ".jpeg");
+		cv::cvtColor(digit, digit, CV_BGR2GRAY);
+		cv::Mat binary;
+		cv::threshold(digit, digit, 128, 1, cv::THRESH_BINARY);
+		digit.convertTo(binary, CV_8UC1);
+		digits.push_back(binary);
+
+	}
 
 	// Loop to read from input one frame at a time, write text on frame, and
 	// copy to output video
@@ -185,15 +196,15 @@ int main(int argc, char* argv[]) {
 		}
 		lastPelletCount = curPelletCount;
 
-		cv::putText(frame, std::to_string(pelletCount), cv::Point(210, 10),
-			cv::FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(255, 255, 255));
+		cv::putText(frame, std::to_string(pelletCount), cv::Point(215, 20),
+			cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
 
 		//Detect number of lives
 		cv::Mat frameLives = frame_hsv(cv::Rect(0, frameSize.height-20, 100, 20)), livesMask;
 		cv::inRange(frameLives, cv::Scalar(20, 100, 200), cv::Scalar(40, 255, 255), livesMask);
 		int lives = locate<ProjectionType::Horizontal>(livesMask, 10).size();
 		
-		cv::putText(frame, std::to_string(lives), cv::Point(75, 285), cv::FONT_HERSHEY_PLAIN, 1.0,
+		cv::putText(frame, std::to_string(lives), cv::Point(75, 285), cv::FONT_HERSHEY_PLAIN, 0.8,
 			cv::Scalar(255, 255, 255));
 
 		//Detect Pac-Man and plot his trajectory
@@ -205,6 +216,28 @@ int main(int argc, char* argv[]) {
 			ghost.process(frame_hsv(cv::Rect(0, 0, frameSize.width, frameSize.height - 20)));
 			ghost.drawPath(frame);
 		}
+
+		//Detect the score
+		cv::Mat frameMask;
+		cv::inRange(frame_hsv(cv::Rect(19, 9, 37, 7)), cv::Scalar(0, 0, 200),
+			cv::Scalar(255, 255, 255), frameMask);
+		cv::threshold(frameMask, frameMask, 128, 255, cv::THRESH_BINARY);
+		
+		std::string score("00000");
+		for(size_t i = 0; i < digits.size(); ++i) {
+			cv::Mat detect;
+			cv::erode(frameMask, detect, digits[i]);
+			
+			for(int x = 0; x < detect.cols; ++x) {
+				if(detect.at<unsigned char>(3, x) > 0) {
+					int pos = cvRound((x-2) / 8.f);
+					score[pos] = i + '0';
+				}
+			}
+		}
+
+		cv::putText(frame, score, cv::Point(155, 20),
+			cv::FONT_HERSHEY_PLAIN, 0.8, cv::Scalar(255, 255, 255));
 
 		cv::imshow("Frame", frame);
 		output_cap.write(frame);
