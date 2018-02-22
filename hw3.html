@@ -1,0 +1,2421 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <meta name="generator" content="AsciiDoc 8.6.9">
+      <title>HCI/CprE/ComS 575: Homework #2</title>
+      <link rel="stylesheet" href="./riak.css" type="text/css">
+   </head>
+   
+   <body class="article">
+      <div id="header">
+         <h1>HCI/CprE/ComS 575: Homework #3</h1>
+         <!-- MAKE CHANGES HERE: Student information -->
+         <span id="author">Your Name</span><br>
+         <span id="email" class="monospaced">&lt;
+         <a href="mailto:Your Email">Your Email</a>&gt;</span><br>
+         <!-- END CHANGES -->
+      </div>
+	  
+      <div id="content">
+	  
+	  <div id="preamble">
+				<div class="sectionbody">
+					<div class="paragraph">
+						<p>
+						There is a sample program on importing, modifying, and exporting video files under templates/examples.
+						</p>
+					</div>
+					<div class="paragraph">
+						<p>
+						Additionally, the files provided as inputs are in Audio Video Interleave (*.avi) format, which is the simplest
+						format to use with OpenCV. However, to get them to display on the HTML submission, you will have to save them as 
+						 / convert them to either H.264 (*.mp4) or Theora (*.ogg).
+						<br><br>	
+						If you are having troubles with H.264, try downloading <a href="https://github.com/cisco/openh264/releases">this DLL</a> and placing it in the folder with the binary.
+						<br>
+						Alternatively, you can install <a href="https://ffmpeg.org/">FFMPEG</a> and use it to convert your .avi files to .mp4 using the command below.
+						
+						<div class="listingblock">
+						<div class="title">FFMPEG Command</div>
+						<div class="content">
+							<pre><h4><tt>ffmpeg -i input.avi -c:a aac -b:a 128k -c:v libx264 -crf 23 output.mp4</tt></h4></pre>
+						</div>
+					</div>
+						
+						<br><br>
+						<strong>Do not waste time on this.</strong>
+						<br><br>
+						If you are unable to get these formats working within a few minutes, you are free to pick a different format or to let OpenCV pick its default - .avi is common.
+						</p>
+					</div>
+					<div class="listingblock">
+						<div class="title">FOURCC codes</div>
+						<div class="content">
+							<!-- Generator: GNU source-highlight 3.1.8
+								by Lorenzo Bettini
+								http://www.lorenzobettini.it
+								http://www.gnu.org/software/src-highlite -->
+							<pre><h4><tt><span style="font-weight: bold"><span style="color: #000000">CV_FOURCC</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'H'</span><span style="color: #990000">,</span><span style="color: #FF0000">'2'</span><span style="color: #990000">,</span><span style="color: #FF0000">'6'</span><span style="color: #990000">,</span><span style="color: #FF0000">'4'</span><span style="color: #990000">);</span> <span style="font-style: italic"><span style="color: #9A1900">// For H.264</span></span>
+<span style="font-weight: bold"><span style="color: #000000">CV_FOURCC</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'T'</span><span style="color: #990000">,</span><span style="color: #FF0000">'H'</span><span style="color: #990000">,</span><span style="color: #FF0000">'E'</span><span style="color: #990000">,</span><span style="color: #FF0000">'O'</span><span style="color: #990000">);</span> <span style="font-style: italic"><span style="color: #9A1900">// For Theora</span></span></tt></h4></pre>
+						</div>
+					</div>
+				</div>
+		</div>
+	  
+		 <!-- PART 1A -->
+         <div class="sect1">
+            <h2 id="_part_1a">Part 1a</h2>
+            <div class="sectionbody">
+               <div class="paragraph">
+                  <p>Write a program that finds the <strong>blue</strong> outlines of the maze in the video,
+						and changes their color to either <strong>brown</strong> (RGB 115:78:60) or <strong>green</strong> (RGB 0:255:0).
+                  </p>
+               </div>
+               <table class="tableblock frame-all grid-all" style=" width:100%; ">
+                  <col style="width:50%;">
+                  <col style="width:50%;">
+                  <tbody>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="video">
+							  <video width="100%" controls>
+								<source src="templates/input1a1.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="image">
+                              <video width="100%" controls>
+								<source src="templates/input1a2.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 1a video 1 -->
+									<source src="output/part1a/output1a1.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 1a video 2 -->
+									<source src="output/part1a/output1a2.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+			   <div class="listingblock">
+                  <div class="title">Source</div>
+                  <div class="content monospaced">
+                     <!-- MAKE CHANGES HERE: Part 1a code -->
+                     <pre>
+// Headers
+
+#include <opencv2/core/core.hpp> 
+
+#include <opencv2/highgui/highgui.hpp>
+
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include <opencv2/opencv.hpp>
+
+#include <iostream>
+
+
+
+int main(int argc, char* argv[]) {
+
+	
+
+	if(argc != 2) {
+
+		std::cerr << "Usage: " << argv[0] << " video_file" << std::endl;
+
+		return 1;
+
+	}
+
+
+
+	// Load input video
+
+	//  If your video is in a different source folder than your code, 
+
+	//  make sure you specify the directory correctly!
+
+	cv::VideoCapture input_cap(argv[1]);
+
+	
+
+	// Check validity of target file
+
+	if(!input_cap.isOpened()) {
+
+		std::cerr << "Input video not found." << std::endl;
+
+		return 1;
+
+	}
+
+	
+
+	// Set up target output video
+
+	/*	usage: VideoWriter(filename, encoding, framerate, Size)
+
+	 *		in our case, cv_cap_prop_* means "get property of capture"
+
+	 *	 	we want our output to have the same properties as the input!
+
+	 */
+
+	cv::VideoWriter output_cap("output.avi", 
+
+							input_cap.get(CV_CAP_PROP_FOURCC),
+
+							input_cap.get(CV_CAP_PROP_FPS),
+
+							cv::Size(input_cap.get(CV_CAP_PROP_FRAME_WIDTH),
+
+							input_cap.get(CV_CAP_PROP_FRAME_HEIGHT)));
+
+	
+
+	// Again, check validity of target output file
+
+	if(!output_cap.isOpened()) {
+
+		std::cerr << "Could not create output file." << std::endl;
+
+		return 1;
+
+	}
+
+	
+
+	cv::namedWindow("Frame");
+
+
+
+	// Loop to read from input one frame at a time, write text on frame, and
+
+	// copy to output video
+
+	cv::Mat frame;
+
+	while(input_cap.read(frame) && (cv::waitKey(10) == -1)) {
+
+		cv::Mat frame_hsv, mask;
+
+
+
+		//Convert frame to HSV color space
+
+		cv::cvtColor(frame, frame_hsv, cv::COLOR_BGR2HSV);
+
+
+
+		//Detect blue lines
+
+		cv::inRange(frame_hsv, cv::Scalar(110, 200, 50), cv::Scalar(130, 255, 200), mask);
+
+
+
+		//Replace blue lines with brown
+
+		cv::Mat frame_brown(frame.size(), CV_8UC3, cv::Scalar(60, 78, 115));
+
+		frame_brown.copyTo(frame, mask);
+
+	
+
+	/*
+
+		cv::putText(frame, "Hello World!",
+
+				cv::Point(0, 50),
+
+				cv::FONT_HERSHEY_PLAIN,
+
+				1.0,
+
+				cv::Scalar(255, 255, 255));
+
+	*/
+
+
+
+		cv::imshow("Frame", frame);
+
+		output_cap.write(frame);
+
+	}
+
+	
+
+	
+
+	// free the capture objects from memory
+
+	input_cap.release();
+
+	output_cap.release();
+
+	
+
+	return 0;
+
+}
+					 </pre>
+                     <!-- END CHANGES -->
+                  </div>
+               </div>
+			   
+        <!-- PART 1B -->       
+		<div class="sect1">
+            <h2 id="_part_1b">Part 1b</h2>
+            <div class="sectionbody">
+               <div class="paragraph">
+                  <p>Write a program that finds Pac-Man <strong>(yellow)<strong> and changes his color to <strong>green</strong> (RGB 0:255:0).
+                  </p>
+               </div>
+               <table class="tableblock frame-all grid-all" style=" width:100%; ">
+                  <col style="width:50%;">
+                  <col style="width:50%;">
+                  <tbody>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="video">
+							  <video width="100%" controls>
+								<source src="templates/input1b1.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="image">
+                              <video width="100%" controls>
+								<source src="templates/input1b2.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 1b video 1 -->
+									<source src="output/part1b/output1b1.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 1b video 2 -->
+									<source src="output/part1b/output1b2.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+			   <div class="listingblock">
+                  <div class="title">Source</div>
+                  <div class="content monospaced">
+                     <!-- MAKE CHANGES HERE: Part 1b code -->
+                     <pre>
+					 
+// Headers
+
+#include <opencv2/core/core.hpp> 
+
+#include <opencv2/highgui/highgui.hpp>
+
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include <opencv2/opencv.hpp>
+
+#include <iostream>
+
+
+
+void changeColor(const cv::Mat& inframe, cv::Mat& outFrame, const cv::Scalar& oldColorMin,
+
+	const cv::Scalar& oldColorMax, const cv::Scalar& newColor);
+
+
+
+int main(int argc, char* argv[]) {
+
+	
+
+	if(argc != 2) {
+
+		std::cerr << "Usage: " << argv[0] << " video_file" << std::endl;
+
+		return 1;
+
+	}
+
+
+
+	// Load input video
+
+	//  If your video is in a different source folder than your code, 
+
+	//  make sure you specify the directory correctly!
+
+	cv::VideoCapture input_cap(argv[1]);
+
+	
+
+	// Check validity of target file
+
+	if(!input_cap.isOpened()) {
+
+		std::cerr << "Input video not found." << std::endl;
+
+		return 1;
+
+	}
+
+	
+
+	// Set up target output video
+
+	/*	usage: VideoWriter(filename, encoding, framerate, Size)
+
+	 *		in our case, cv_cap_prop_* means "get property of capture"
+
+	 *	 	we want our output to have the same properties as the input!
+
+	 */
+
+	cv::VideoWriter output_cap("output.avi", 
+
+							input_cap.get(CV_CAP_PROP_FOURCC),
+
+							input_cap.get(CV_CAP_PROP_FPS),
+
+							cv::Size(input_cap.get(CV_CAP_PROP_FRAME_WIDTH),
+
+							input_cap.get(CV_CAP_PROP_FRAME_HEIGHT)));
+
+	
+
+	// Again, check validity of target output file
+
+	if(!output_cap.isOpened()) {
+
+		std::cerr << "Could not create output file." << std::endl;
+
+		return 1;
+
+	}
+
+	
+
+	cv::namedWindow("Frame");
+
+
+
+	// Loop to read from input one frame at a time, write text on frame, and
+
+	// copy to output video
+
+	cv::Mat frame;
+
+	while(input_cap.read(frame) && (cv::waitKey(10) == -1)) {
+
+		cv::Mat frame_hsv, mask;
+
+
+
+		//Convert frame to HSV color space
+
+		cv::cvtColor(frame, frame_hsv, cv::COLOR_BGR2HSV);
+
+		
+
+		//Replace border lines with brown
+
+		changeColor(frame_hsv, frame, cv::Scalar(110, 200, 50), cv::Scalar(130, 255, 200),
+
+			cv::Scalar(60, 78, 115));
+
+
+
+		//Change Pac-Man color to green
+
+		changeColor(frame_hsv, frame, cv::Scalar(25, 100, 100), cv::Scalar(35, 255, 255),
+
+			cv::Scalar(0, 255, 0));
+
+
+
+	/*
+
+		cv::putText(frame, "Hello World!",
+
+				cv::Point(0, 50),
+
+				cv::FONT_HERSHEY_PLAIN,
+
+				1.0,
+
+				cv::Scalar(255, 255, 255));
+
+	*/
+
+
+
+		cv::imshow("Frame", frame);
+
+		output_cap.write(frame);
+
+	}
+
+	
+
+	
+
+	// free the capture objects from memory
+
+	input_cap.release();
+
+	output_cap.release();
+
+	
+
+	return 0;
+
+}
+
+
+
+void changeColor(const cv::Mat& inFrame, cv::Mat& outFrame, const cv::Scalar& oldColorMin,
+
+	const cv::Scalar& oldColorMax,
+
+	const cv::Scalar& newColor) {
+
+		cv::Mat mask, frameColor{outFrame.size(), CV_8UC3, newColor};
+
+
+
+		cv::inRange(inFrame, oldColorMin, oldColorMax, mask);
+
+		frameColor.copyTo(outFrame, mask);
+
+}
+</pre>
+                     <!-- END CHANGES -->
+                  </div>
+               </div>
+         
+		 <!-- PART 2A -->
+		 <div class="sect2">
+            <h2 id="_part_2a">Part 2a</h2>
+            <div class="sectionbody">
+               <div class="paragraph">
+                  <p>Write a program that counts the remaining Power-Pellets (large blinking circles) and print this number
+				     as an overlay over the video in the <strong>upper-right</strong> corner.
+                  </p>
+               </div>
+               <table class="tableblock frame-all grid-all" style=" width:100%; ">
+                  <col style="width:50%;">
+                  <col style="width:50%;">
+                  <tbody>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="video">
+							  <video width="100%" controls>
+								<source src="templates/input2a1.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="image">
+                              <video width="100%" controls>
+								<source src="templates/input2a2.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 2a video 1 -->
+									<source src="output/part2a/output2a1.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 2a video 2 -->
+									<source src="output/part2a/output2a2.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+			   <div class="listingblock">
+                  <div class="title">Source</div>
+                  <div class="content monospaced">
+                     <!-- MAKE CHANGES HERE: Part 2a code -->
+                     <pre>
+// Headers
+
+#include <opencv2/core/core.hpp> 
+
+#include <opencv2/highgui/highgui.hpp>
+
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include <opencv2/opencv.hpp>
+
+
+
+#include <iostream>
+
+#include <numeric>
+
+
+
+enum class ProjectionType {
+
+	Horizontal,
+
+	Vertical
+
+};
+
+
+
+void changeColor(const cv::Mat& inframe, cv::Mat& outFrame, const cv::Scalar& oldColorMin,
+
+	const cv::Scalar& oldColorMax, const cv::Scalar& newColor, const std::string& window = {});
+
+
+
+template<ProjectionType Type>
+
+std::vector<int> getProjection(const cv::Mat& image);
+
+
+
+std::vector<int> getPeaks(const std::vector<int>&, unsigned int minDistance = 1);
+
+
+
+std::vector<int> locate(const cv::Mat& mask, int minArea);
+
+
+
+int main(int argc, char* argv[]) {
+
+	
+
+	if(argc != 2) {
+
+		std::cerr << "Usage: " << argv[0] << " video_file" << std::endl;
+
+		return 1;
+
+	}
+
+
+
+	// Load input video
+
+	//  If your video is in a different source folder than your code, 
+
+	//  make sure you specify the directory correctly!
+
+	cv::VideoCapture input_cap(argv[1]);
+
+	
+
+	// Check validity of target file
+
+	if(!input_cap.isOpened()) {
+
+		std::cerr << "Input video not found." << std::endl;
+
+		return 1;
+
+	}
+
+	
+
+	// Set up target output video
+
+	/*	usage: VideoWriter(filename, encoding, framerate, Size)
+
+	 *		in our case, cv_cap_prop_* means "get property of capture"
+
+	 *	 	we want our output to have the same properties as the input!
+
+	 */
+
+	cv::VideoWriter output_cap("output.avi", 
+
+							input_cap.get(CV_CAP_PROP_FOURCC),
+
+							input_cap.get(CV_CAP_PROP_FPS),
+
+							cv::Size(input_cap.get(CV_CAP_PROP_FRAME_WIDTH),
+
+							input_cap.get(CV_CAP_PROP_FRAME_HEIGHT)));
+
+	
+
+	// Again, check validity of target output file
+
+	if(!output_cap.isOpened()) {
+
+		std::cerr << "Could not create output file." << std::endl;
+
+		return 1;
+
+	}
+
+	
+
+	cv::namedWindow("Frame");
+
+
+
+	int pelletCount = -1, lastPelletCount = 0;
+
+	int pelletTime = 6;
+
+
+
+	// Loop to read from input one frame at a time, write text on frame, and
+
+	// copy to output video
+
+	cv::Mat frame;
+
+	while(input_cap.read(frame) && (cv::waitKey(10) == -1)) {
+
+		cv::Mat frame_hsv;
+
+
+
+		//Convert frame to HSV color space
+
+		cv::cvtColor(frame, frame_hsv, cv::COLOR_BGR2HSV);
+
+		
+
+		//Replace border lines with brown
+
+		changeColor(frame_hsv, frame, cv::Scalar(110, 200, 50), cv::Scalar(130, 255, 200),
+
+			cv::Scalar(60, 78, 115));
+
+
+
+		//Change Pac-Man color to green
+
+		changeColor(frame_hsv, frame, cv::Scalar(25, 100, 100), cv::Scalar(35, 255, 255),
+
+			cv::Scalar(0, 255, 0));
+
+
+
+		//Detect Power Pellets
+
+		cv::Mat pelletMask, pelletMask2;
+
+		cv::inRange(frame_hsv, cv::Scalar(170, 40, 225), cv::Scalar(180, 85, 255), pelletMask);
+
+		cv::inRange(frame_hsv, cv::Scalar(0, 40, 225), cv::Scalar(10, 85, 255), pelletMask2);
+
+		cv::bitwise_or(pelletMask, pelletMask2, pelletMask);
+
+		
+
+		auto blobs = locate(pelletMask, 40);
+
+		int curPelletCount = 0;
+
+		for(auto area : blobs) {
+
+			curPelletCount += area / 40;
+
+		}
+
+		if(pelletCount == -1) {
+
+			pelletCount = curPelletCount;
+
+		}
+
+		else if(lastPelletCount == 0 && curPelletCount > 0) {
+
+			pelletCount = curPelletCount;
+
+		}
+
+		else if(curPelletCount == 0) {
+
+			pelletTime--;
+
+			if(pelletTime < 0) {
+
+				pelletCount = 0;
+
+				pelletTime = 6;
+
+			}
+
+		}
+
+		else {
+
+			pelletTime = 6;
+
+		}
+
+		lastPelletCount = curPelletCount;
+
+
+
+		cv::putText(frame, std::to_string(pelletCount), cv::Point(210, 10),
+
+			cv::FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(255, 255, 255));
+
+
+
+		cv::imshow("Frame", frame);
+
+		output_cap.write(frame);
+
+	}
+
+	
+
+	
+
+	// free the capture objects from memory
+
+	input_cap.release();
+
+	output_cap.release();
+
+	
+
+	return 0;
+
+}
+
+
+
+void changeColor(const cv::Mat& inFrame, cv::Mat& outFrame, const cv::Scalar& oldColorMin,
+
+	const cv::Scalar& oldColorMax, const cv::Scalar& newColor, const std::string& window) {
+
+		cv::Mat mask, frameColor{outFrame.size(), CV_8UC3, newColor};
+
+
+
+		cv::inRange(inFrame, oldColorMin, oldColorMax, mask);
+
+		frameColor.copyTo(outFrame, mask);
+
+
+
+		if(!window.empty()) {
+
+			cv::imshow(window, mask);
+
+		}
+
+}
+
+
+
+/*
+
+ * getProjection
+
+ *
+
+ * Calculates horizontal or vertical projection of image
+
+ * and returns as vector<int>
+
+ *
+
+*/
+
+
+
+template<ProjectionType Type>
+
+std::vector<int> getProjection(const cv::Mat& image) {
+
+	std::vector<int> projection((Type == ProjectionType::Horizontal) ?
+
+		image.cols : image.rows);
+
+
+
+	for(unsigned int i = 0; i < projection.size(); ++i) {
+
+		if(Type == ProjectionType::Horizontal) {
+
+			projection[i] = cv::countNonZero(image(cv::Rect(i, 0, 1, image.rows)));
+
+		}
+
+		else {
+
+			projection[i] = cv::countNonZero(image(cv::Rect(0, i, image.cols, 1)));
+
+		}
+
+	}
+
+
+
+	return projection;
+
+}
+
+
+
+/*
+
+ * getPeaks
+
+ *
+
+ * Detect peaks from input vector<int> with min distance between
+
+ * and returns as vector<int>
+
+ *
+
+*/
+
+
+
+std::vector<int> getPeaks(const std::vector<int>& values, unsigned int minDistance) {
+
+	std::vector<int> peaks;
+
+
+
+	int avg = std::accumulate(values.begin(), values.end(), 0) / values.size();
+
+	for(unsigned int i = 0; i < values.size(); ++i) {
+
+		if((peaks.empty() || (i >= (peaks[peaks.size()-1]+minDistance))) && values[i] > avg) {
+
+			peaks.push_back(i);
+
+		}
+
+	}
+
+
+
+	return peaks;
+
+}
+
+
+
+std::vector<int> locate(const cv::Mat& mask, int minArea) {
+
+	std::vector<int> blobs;
+
+
+
+	auto proj = getProjection<ProjectionType::Horizontal>(mask);
+
+	
+
+	int area = 0;
+
+	for(int i = 0; i < proj.size(); ++i) {
+
+		if(proj[i] > 0) {
+
+			area += proj[i];
+
+		}
+
+		else if(area > 0) {
+
+			if(area >= minArea) {
+
+				blobs.push_back(area);
+
+			}
+
+			area = 0;
+
+		}
+
+	}
+
+
+
+	return blobs;
+
+}					 
+</pre>
+                     <!-- END CHANGES -->
+                  </div>
+               </div>
+               
+		<!-- PART 2B -->	   
+		<div class="sect2">
+            <h2 id="_part_2b">Part 2b</h2>
+            <div class="sectionbody">
+               <div class="paragraph">
+                  <p>Write a program that counts the number of lives that Pac-Man has left, represented by the icons in the <strong>lower-left</strong> corner.
+				     Print this count as a number in the same location; do not remove the original icons.
+                  </p>
+               </div>
+               <table class="tableblock frame-all grid-all" style=" width:100%; ">
+                  <col style="width:50%;">
+                  <col style="width:50%;">
+                  <tbody>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="video">
+							  <video width="100%" controls>
+								<source src="templates/input2b1.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="image">
+                              <video width="100%" controls>
+								<source src="templates/input2b2.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 2b video 1 -->
+									<source src="output/part2b/output2b1.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 2b video 2 -->
+									<source src="output/part2b/output2b2.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+			   <div class="listingblock">
+                  <div class="title">Source</div>
+                  <div class="content monospaced">
+                     <!-- MAKE CHANGES HERE: Part 2b code -->
+                     <pre>
+// Headers
+
+#include <opencv2/core/core.hpp> 
+
+#include <opencv2/highgui/highgui.hpp>
+
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include <opencv2/opencv.hpp>
+
+
+
+#include <iostream>
+
+#include <numeric>
+
+
+
+enum class ProjectionType {
+
+	Horizontal,
+
+	Vertical
+
+};
+
+
+
+void changeColor(const cv::Mat& inframe, cv::Mat& outFrame, const cv::Scalar& oldColorMin,
+
+	const cv::Scalar& oldColorMax, const cv::Scalar& newColor, const std::string& window = {});
+
+
+
+template<ProjectionType Type>
+
+std::vector<int> getProjection(const cv::Mat& image);
+
+
+
+std::vector<int> getPeaks(const std::vector<int>&, unsigned int minDistance = 1);
+
+
+
+std::vector<int> locate(const cv::Mat& mask, int minArea);
+
+
+
+int main(int argc, char* argv[]) {
+
+	
+
+	if(argc != 2) {
+
+		std::cerr << "Usage: " << argv[0] << " video_file" << std::endl;
+
+		return 1;
+
+	}
+
+
+
+	// Load input video
+
+	//  If your video is in a different source folder than your code, 
+
+	//  make sure you specify the directory correctly!
+
+	cv::VideoCapture input_cap(argv[1]);
+
+	
+
+	// Check validity of target file
+
+	if(!input_cap.isOpened()) {
+
+		std::cerr << "Input video not found." << std::endl;
+
+		return 1;
+
+	}
+
+	
+
+	// Set up target output video
+
+	/*	usage: VideoWriter(filename, encoding, framerate, Size)
+
+	 *		in our case, cv_cap_prop_* means "get property of capture"
+
+	 *	 	we want our output to have the same properties as the input!
+
+	 */
+
+	cv::VideoWriter output_cap("output.avi", 
+
+							input_cap.get(CV_CAP_PROP_FOURCC),
+
+							input_cap.get(CV_CAP_PROP_FPS),
+
+							cv::Size(input_cap.get(CV_CAP_PROP_FRAME_WIDTH),
+
+							input_cap.get(CV_CAP_PROP_FRAME_HEIGHT)));
+
+	
+
+	// Again, check validity of target output file
+
+	if(!output_cap.isOpened()) {
+
+		std::cerr << "Could not create output file." << std::endl;
+
+		return 1;
+
+	}
+
+	
+
+	cv::namedWindow("Frame");
+
+
+
+	int pelletCount = -1, lastPelletCount = 0;
+
+	int pelletTime = 6;
+
+
+
+	// Loop to read from input one frame at a time, write text on frame, and
+
+	// copy to output video
+
+	cv::Mat frame;
+
+	while(input_cap.read(frame) && (cv::waitKey(10) == -1)) {
+
+		cv::Mat frame_hsv;
+
+		auto frameSize = frame.size();
+
+
+
+		//Convert frame to HSV color space
+
+		cv::cvtColor(frame, frame_hsv, cv::COLOR_BGR2HSV);
+
+		
+
+		//Replace border lines with brown
+
+		changeColor(frame_hsv, frame, cv::Scalar(110, 200, 50), cv::Scalar(130, 255, 200),
+
+			cv::Scalar(60, 78, 115));
+
+
+
+		//Change Pac-Man color to green
+
+		changeColor(frame_hsv, frame, cv::Scalar(25, 100, 100), cv::Scalar(35, 255, 255),
+
+			cv::Scalar(0, 255, 0));
+
+
+
+		//Detect Power Pellets
+
+		cv::Mat pelletMask, pelletMask2;
+
+		cv::inRange(frame_hsv, cv::Scalar(170, 40, 225), cv::Scalar(180, 85, 255), pelletMask);
+
+		cv::inRange(frame_hsv, cv::Scalar(0, 40, 225), cv::Scalar(10, 85, 255), pelletMask2);
+
+		cv::bitwise_or(pelletMask, pelletMask2, pelletMask);
+
+		
+
+		auto blobs = locate(pelletMask, 40);
+
+		int curPelletCount = 0;
+
+		for(auto area : blobs) {
+
+			curPelletCount += area / 40;
+
+		}
+
+		if(pelletCount == -1) {
+
+			pelletCount = curPelletCount;
+
+		}
+
+		else if(lastPelletCount == 0 && curPelletCount > 0) {
+
+			pelletCount = curPelletCount;
+
+		}
+
+		else if(curPelletCount == 0) {
+
+			pelletTime--;
+
+			if(pelletTime < 0) {
+
+				pelletCount = 0;
+
+				pelletTime = 6;
+
+			}
+
+		}
+
+		else {
+
+			pelletTime = 6;
+
+		}
+
+		lastPelletCount = curPelletCount;
+
+
+
+		cv::putText(frame, std::to_string(pelletCount), cv::Point(210, 10),
+
+			cv::FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(255, 255, 255));
+
+
+
+		//Detect number of lives
+
+		cv::Mat frameLives = frame_hsv(cv::Rect(0, frameSize.height-20, 100, 20)), livesMask;
+
+		cv::inRange(frameLives, cv::Scalar(20, 100, 200), cv::Scalar(40, 255, 255), livesMask);
+
+		int lives = locate(livesMask, 10).size();
+
+		
+
+		cv::putText(frame, std::to_string(lives), cv::Point(75, 285), cv::FONT_HERSHEY_PLAIN, 1.0,
+
+			cv::Scalar(255, 255, 255));
+
+
+
+		cv::imshow("Frame", frame);
+
+		output_cap.write(frame);
+
+	}
+
+	
+
+	
+
+	// free the capture objects from memory
+
+	input_cap.release();
+
+	output_cap.release();
+
+	
+
+	return 0;
+
+}
+
+
+
+void changeColor(const cv::Mat& inFrame, cv::Mat& outFrame, const cv::Scalar& oldColorMin,
+
+	const cv::Scalar& oldColorMax, const cv::Scalar& newColor, const std::string& window) {
+
+		cv::Mat mask, frameColor{outFrame.size(), CV_8UC3, newColor};
+
+
+
+		cv::inRange(inFrame, oldColorMin, oldColorMax, mask);
+
+		frameColor.copyTo(outFrame, mask);
+
+
+
+		if(!window.empty()) {
+
+			cv::imshow(window, mask);
+
+		}
+
+}
+
+
+
+/*
+
+ * getProjection
+
+ *
+
+ * Calculates horizontal or vertical projection of image
+
+ * and returns as vector<int>
+
+ *
+
+*/
+
+
+
+template<ProjectionType Type>
+
+std::vector<int> getProjection(const cv::Mat& image) {
+
+	std::vector<int> projection((Type == ProjectionType::Horizontal) ?
+
+		image.cols : image.rows);
+
+
+
+	for(unsigned int i = 0; i < projection.size(); ++i) {
+
+		if(Type == ProjectionType::Horizontal) {
+
+			projection[i] = cv::countNonZero(image(cv::Rect(i, 0, 1, image.rows)));
+
+		}
+
+		else {
+
+			projection[i] = cv::countNonZero(image(cv::Rect(0, i, image.cols, 1)));
+
+		}
+
+	}
+
+
+
+	return projection;
+
+}
+
+
+
+/*
+
+ * getPeaks
+
+ *
+
+ * Detect peaks from input vector<int> with min distance between
+
+ * and returns as vector<int>
+
+ *
+
+*/
+
+
+
+std::vector<int> getPeaks(const std::vector<int>& values, unsigned int minDistance) {
+
+	std::vector<int> peaks;
+
+
+
+	int avg = std::accumulate(values.begin(), values.end(), 0) / values.size();
+
+	for(unsigned int i = 0; i < values.size(); ++i) {
+
+		if((peaks.empty() || (i >= (peaks[peaks.size()-1]+minDistance))) && values[i] > avg) {
+
+			peaks.push_back(i);
+
+		}
+
+	}
+
+
+
+	return peaks;
+
+}
+
+
+
+std::vector<int> locate(const cv::Mat& mask, int minArea) {
+
+	std::vector<int> blobs;
+
+
+
+	auto proj = getProjection<ProjectionType::Horizontal>(mask);
+
+	
+
+	int area = 0;
+
+	for(int i = 0; i < proj.size(); ++i) {
+
+		if(proj[i] > 0) {
+
+			area += proj[i];
+
+		}
+
+		else if(area > 0) {
+
+			if(area >= minArea) {
+
+				blobs.push_back(area);
+
+			}
+
+			area = 0;
+
+		}
+
+	}
+
+
+
+	return blobs;
+
+}
+					 </pre>
+                     <!-- END CHANGES -->
+                  </div>
+               </div>
+			   
+			   <!-- PART 3A -->
+         <div class="sect1">
+            <h2 id="_part_3a">Part 3a</h2>
+            <div class="sectionbody">
+               <div class="paragraph">
+                  <p>Write a program that locates Pac-Man in each frame, and overlay his trajectory (path followed) in <strong>yellow</strong> (his original color).
+					 
+                  </p>
+               </div>
+               <table class="tableblock frame-all grid-all" style=" width:100%; ">
+                  <col style="width:50%;">
+                  <col style="width:50%;">
+                  <tbody>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="video">
+							  <video width="100%" controls>
+								<source src="templates/input3a1.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="image">
+                              <video width="100%" controls>
+								<source src="templates/input3a2.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 3a video 1 -->
+									<source src="output/part3a/output3a1.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 3a video 2 -->
+									<source src="output/part3a/output3a2.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+			   <div class="listingblock">
+                  <div class="title">Source</div>
+                  <div class="content monospaced">
+                     <!-- MAKE CHANGES HERE: Part 3a code -->
+                     <pre>
+// Headers
+
+#include <opencv2/core/core.hpp> 
+
+#include <opencv2/highgui/highgui.hpp>
+
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include <opencv2/opencv.hpp>
+
+
+
+#include <iostream>
+
+#include <numeric>
+
+#include <utility>
+
+
+
+enum class ProjectionType {
+
+	Horizontal,
+
+	Vertical
+
+};
+
+
+
+using Path = std::vector<std::vector<cv::Point>>;
+
+
+
+void changeColor(const cv::Mat& inframe, cv::Mat& outFrame, const cv::Scalar& oldColorMin,
+
+	const cv::Scalar& oldColorMax, const cv::Scalar& newColor, const std::string& window = {});
+
+
+
+template<ProjectionType Type>
+
+std::vector<int> getProjection(const cv::Mat& image);
+
+
+
+std::vector<int> getPeaks(const std::vector<int>&, unsigned int minDistance = 1);
+
+
+
+template<ProjectionType Dir>
+
+std::vector<std::pair<int, int>> locate(const cv::Mat& mask, int minArea);
+
+
+
+void drawPath(cv::Mat& frame, const Path& path, const cv::Scalar& color, int thickness = 3);
+
+
+
+int main(int argc, char* argv[]) {
+
+	
+
+	if(argc != 2) {
+
+		std::cerr << "Usage: " << argv[0] << " video_file" << std::endl;
+
+		return 1;
+
+	}
+
+
+
+	// Load input video
+
+	//  If your video is in a different source folder than your code, 
+
+	//  make sure you specify the directory correctly!
+
+	cv::VideoCapture input_cap(argv[1]);
+
+	
+
+	// Check validity of target file
+
+	if(!input_cap.isOpened()) {
+
+		std::cerr << "Input video not found." << std::endl;
+
+		return 1;
+
+	}
+
+	
+
+	// Set up target output video
+
+	/*	usage: VideoWriter(filename, encoding, framerate, Size)
+
+	 *		in our case, cv_cap_prop_* means "get property of capture"
+
+	 *	 	we want our output to have the same properties as the input!
+
+	 */
+
+	cv::VideoWriter output_cap("output.avi", 
+
+							input_cap.get(CV_CAP_PROP_FOURCC),
+
+							input_cap.get(CV_CAP_PROP_FPS),
+
+							cv::Size(input_cap.get(CV_CAP_PROP_FRAME_WIDTH),
+
+							input_cap.get(CV_CAP_PROP_FRAME_HEIGHT)));
+
+	
+
+	// Again, check validity of target output file
+
+	if(!output_cap.isOpened()) {
+
+		std::cerr << "Could not create output file." << std::endl;
+
+		return 1;
+
+	}
+
+	
+
+	cv::namedWindow("Frame");
+
+
+
+	int pelletCount = -1, lastPelletCount = 0;
+
+	int pelletTime = 6;
+
+
+
+	Path playerPath;
+
+	bool pathBreak = true;
+
+
+
+	// Loop to read from input one frame at a time, write text on frame, and
+
+	// copy to output video
+
+	cv::Mat frame;
+
+	while(input_cap.read(frame) && (cv::waitKey(10) == -1)) {
+
+		cv::Mat frame_hsv;
+
+		auto frameSize = frame.size();
+
+
+
+		//Convert frame to HSV color space
+
+		cv::cvtColor(frame, frame_hsv, cv::COLOR_BGR2HSV);
+
+		
+
+		//Replace border lines with brown
+
+		changeColor(frame_hsv, frame, cv::Scalar(110, 200, 50), cv::Scalar(130, 255, 200),
+
+			cv::Scalar(60, 78, 115));
+
+
+
+		//Change Pac-Man color to green
+
+		changeColor(frame_hsv, frame, cv::Scalar(25, 100, 100), cv::Scalar(35, 255, 255),
+
+			cv::Scalar(0, 255, 0));
+
+
+
+		//Detect Power Pellets
+
+		cv::Mat pelletMask, pelletMask2;
+
+		cv::inRange(frame_hsv, cv::Scalar(170, 40, 225), cv::Scalar(180, 85, 255), pelletMask);
+
+		cv::inRange(frame_hsv, cv::Scalar(0, 40, 225), cv::Scalar(10, 85, 255), pelletMask2);
+
+		cv::bitwise_or(pelletMask, pelletMask2, pelletMask);
+
+		
+
+		//Locate all blobs of size
+
+		auto blobs = locate<ProjectionType::Horizontal>(pelletMask, 40);
+
+		int curPelletCount = 0;
+
+		for(auto blob : blobs) {
+
+			//Pellet is ~40 pixels. Integer division blobSize/40 gives total pellet count
+
+			curPelletCount += blob.second / 40;
+
+		}
+
+		if(pelletCount == -1) {
+
+			pelletCount = curPelletCount;
+
+		}
+
+		else if(lastPelletCount == 0 && curPelletCount > 0) {
+
+			//Detect that pellets have reappeared on screen
+
+			pelletCount = curPelletCount;
+
+		}
+
+		else if(curPelletCount == 0) {
+
+			pelletTime--;
+
+			if(pelletTime < 0) {
+
+				//If pellets should have appeared again, but have not, then there are no pellets
+
+				pelletCount = 0;
+
+				pelletTime = 6;
+
+			}
+
+		}
+
+		else {
+
+			pelletTime = 6;
+
+		}
+
+		lastPelletCount = curPelletCount;
+
+
+
+		cv::putText(frame, std::to_string(pelletCount), cv::Point(210, 10),
+
+			cv::FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(255, 255, 255));
+
+
+
+		//Detect number of lives
+
+		cv::Mat frameLives = frame_hsv(cv::Rect(0, frameSize.height-20, 100, 20)), livesMask;
+
+		cv::inRange(frameLives, cv::Scalar(20, 100, 200), cv::Scalar(40, 255, 255), livesMask);
+
+		int lives = locate<ProjectionType::Horizontal>(livesMask, 10).size();
+
+		
+
+		cv::putText(frame, std::to_string(lives), cv::Point(75, 285), cv::FONT_HERSHEY_PLAIN, 1.0,
+
+			cv::Scalar(255, 255, 255));
+
+
+
+		//Detect Pac-Man and plot his trajectory
+
+		cv::Mat playerMask;
+
+		auto gameWindow = frame_hsv(cv::Rect(0, 0, frameSize.width, frameSize.height - 20));
+
+		cv::inRange(gameWindow, cv::Scalar(25, 100, 100), cv::Scalar(35, 255, 255), playerMask);
+
+		auto playerX = locate<ProjectionType::Horizontal>(playerMask, 10),
+
+			playerY = locate<ProjectionType::Vertical>(playerMask, 10);
+
+
+
+		if(playerX.size() != 1 || playerY.size() != 1) {
+
+			//Start new curve in path (needed for when pac-man jumps from left to right)
+
+			pathBreak = true;
+
+		}
+
+		else {
+
+			if(pathBreak == true) {
+
+				//Start new curve
+
+				playerPath.emplace_back();
+
+				pathBreak = false;
+
+			}
+
+			//Place current point into current curve
+
+			playerPath.back().emplace_back(playerX[0].first, playerY[0].first);
+
+		}
+
+
+
+		drawPath(frame, playerPath, cv::Scalar(0, 255, 255));
+
+
+
+		cv::imshow("Frame", frame);
+
+		output_cap.write(frame);
+
+	}
+
+	
+
+	
+
+	// free the capture objects from memory
+
+	input_cap.release();
+
+	output_cap.release();
+
+	
+
+	return 0;
+
+}
+
+
+
+void changeColor(const cv::Mat& inFrame, cv::Mat& outFrame, const cv::Scalar& oldColorMin,
+
+	const cv::Scalar& oldColorMax, const cv::Scalar& newColor, const std::string& window) {
+
+		cv::Mat mask, frameColor{outFrame.size(), CV_8UC3, newColor};
+
+
+
+		cv::inRange(inFrame, oldColorMin, oldColorMax, mask);
+
+		frameColor.copyTo(outFrame, mask);
+
+
+
+		if(!window.empty()) {
+
+			cv::imshow(window, mask);
+
+		}
+
+}
+
+
+
+/*
+
+ * getProjection
+
+ *
+
+ * Calculates horizontal or vertical projection of image
+
+ * and returns as vector<int>
+
+ *
+
+*/
+
+
+
+template<ProjectionType Type>
+
+std::vector<int> getProjection(const cv::Mat& image) {
+
+	std::vector<int> projection((Type == ProjectionType::Horizontal) ?
+
+		image.cols : image.rows);
+
+
+
+	for(unsigned int i = 0; i < projection.size(); ++i) {
+
+		if(Type == ProjectionType::Horizontal) {
+
+			projection[i] = cv::countNonZero(image(cv::Rect(i, 0, 1, image.rows)));
+
+		}
+
+		else {
+
+			projection[i] = cv::countNonZero(image(cv::Rect(0, i, image.cols, 1)));
+
+		}
+
+	}
+
+
+
+	return projection;
+
+}
+
+
+
+/*
+
+ * getPeaks
+
+ *
+
+ * Detect peaks from input vector<int> with min distance between
+
+ * and returns as vector<int>
+
+ *
+
+*/
+
+
+
+std::vector<int> getPeaks(const std::vector<int>& values, unsigned int minDistance) {
+
+	std::vector<int> peaks;
+
+
+
+	int avg = std::accumulate(values.begin(), values.end(), 0) / values.size();
+
+	for(unsigned int i = 0; i < values.size(); ++i) {
+
+		if((peaks.empty() || (i >= (peaks[peaks.size()-1]+minDistance))) && values[i] > avg) {
+
+			peaks.push_back(i);
+
+		}
+
+	}
+
+
+
+	return peaks;
+
+}
+
+
+
+template<ProjectionType Dir>
+
+std::vector<std::pair<int, int>> locate(const cv::Mat& mask, int minArea) {
+
+	std::vector<std::pair<int, int>> blobs;
+
+
+
+	auto proj = getProjection<Dir>(mask);
+
+	
+
+	int area = 0, start = 0;
+
+	for(size_t i = 0; i < proj.size(); ++i) {
+
+		if(proj[i] > 0) {
+
+			if(area == 0) {
+
+				start = i;
+
+			}
+
+			area += proj[i];
+
+		}
+
+		else if(area > 0) {
+
+			if(area >= minArea) {
+
+				blobs.emplace_back((start+i)/2, area);
+
+			}
+
+			area = 0;
+
+		}
+
+	}
+
+
+
+	return blobs;
+
+}
+
+
+
+
+
+void drawPath(cv::Mat& frame, const Path& path, const cv::Scalar& color, int thickness) {
+
+	for(const auto& curve : path) {
+
+		if(curve.size() > 1) {
+
+			for(size_t i = 0; i < (curve.size()-1); ++i) {
+
+				cv::line(frame, curve[i], curve[i+1], color, thickness);
+
+			}
+
+		}
+
+	}
+
+}
+					 </pre>
+                     <!-- END CHANGES -->
+                  </div>
+               </div>
+			   
+        <!-- PART 3B -->       
+		<div class="sect1">
+            <h2 id="_part_3b">Part 3b</h2>
+            <div class="sectionbody">
+               <div class="paragraph">
+                  <p>Repeat 3a, but this time locate and track all 4 of the ghosts. Color their paths with their original colors 
+				  (<strong>Red, Pink, Light-Blue, and Orange</strong>).
+				  For this part, you may assume that all 4 ghosts are visible at all times, and will <strong>not</strong> change color.
+                  </p>
+               </div>
+               <table class="tableblock frame-all grid-all" style=" width:100%; ">
+                  <col style="width:50%;">
+                  <col style="width:50%;">
+                  <tbody>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="video">
+							  <video width="100%" controls>
+								<source src="templates/input3b1.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="image">
+                              <video width="100%" controls>
+								<source src="templates/input3b2.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 3b video 1 -->
+									<source src="output/part3b/output3b1.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 3b video 2 -->
+									<source src="output/part3b/output3b2.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+			   <div class="listingblock">
+                  <div class="title">Source</div>
+                  <div class="content monospaced">
+                     <!-- MAKE CHANGES HERE: Part 3b code -->
+                     <pre>
+// Insert your code here
+					 </pre>
+                     <!-- END CHANGES -->
+                  </div>
+               </div>
+         
+		 <!-- PART 4 -->
+		 <div class="sect2">
+            <h2 id="_part_4">Part 4</h2>
+            <div class="sectionbody">
+               <div class="paragraph">
+                  <p>Write a program that keeps track of the score displayed in the <strong>upper-left</strong> corner,
+					 and print it as an overlaid number in the <strong>upper-right</strong> corner. Use a different font to display
+					 the score.
+					 <br>
+					 <br>
+					 There are crops of all 10 digits (0-9) available in the "digits" folder under input/part4.
+                  </p>
+               </div>
+               <table class="tableblock frame-all grid-all" style=" width:100%; ">
+                  <col style="width:50%;">
+                  <col style="width:50%;">
+                  <tbody>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="video">
+							  <video width="100%" controls>
+								<source src="templates/input4_1.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="image">
+                              <video width="100%" controls>
+								<source src="templates/input4_2.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 4 video 1 -->
+									<source src="output/part4/output4_1.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 4 video 2 -->
+									<source src="output/part4/output4_2.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+			   <div class="listingblock">
+                  <div class="title">Source</div>
+                  <div class="content monospaced">
+                     <!-- MAKE CHANGES HERE: Part 4 code -->
+                     <pre>
+// Insert your code here
+					 </pre>
+                     <!-- END CHANGES -->
+                  </div>
+               </div>
+			   
+        <h1 id="_ec">Extra Credit</h1>		
+		
+		<!-- PART 5A -->	   
+		<div class="sect2">
+            <h2 id="_part_5a">Part 5a</h2>
+            <div class="sectionbody">
+               <div class="paragraph">
+                  <p>Write a program that detects when Pac-Man eats one of the Power-Pellets (large blinking circles).
+					 Draw a <strong>square</strong> around that location to indicate that your program detected the event.
+					 The square should disappear after 1 second (30 frames).
+                  </p>
+               </div>
+               <table class="tableblock frame-all grid-all" style=" width:100%; ">
+                  <col style="width:50%;">
+                  <col style="width:50%;">
+                  <tbody>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="video">
+							  <video width="100%" controls>
+								<source src="templates/input5a1.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="image">
+                              <video width="100%" controls>
+								<source src="templates/input5a2.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 5a video 1 -->
+									<source src="output/part5a/output5a1.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 5a video 2 -->
+									<source src="output/part5a/output5a2.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+			   <div class="listingblock">
+                  <div class="title">Source</div>
+                  <div class="content monospaced">
+                     <!-- MAKE CHANGES HERE: Part 5a code -->
+                     <pre>
+// Insert your code here
+					 </pre>
+                     <!-- END CHANGES -->
+                  </div>
+               </div>
+			   
+		<!-- PART 5B -->	   
+		<div class="sect2">
+            <h2 id="_part_5b">Part 5b</h2>
+            <div class="sectionbody">
+               <div class="paragraph">
+                  <p>Repeat 5a, but instead detect when Pac-Man successfully eats one of the ghosts 
+					 (that is, the ghost is <strong>Dark-Blue</strong> or <strong>White</strong> and you get a 
+					 bonus for eating it, instead of losing a life or losing the game).
+					 <br>
+					 Draw a <strong>square</strong> around that location to indicate that your program detected the event.
+					 The square should disappear after 1 second (30 frames).
+                  </p>
+               </div>
+               <table class="tableblock frame-all grid-all" style=" width:100%; ">
+                  <col style="width:50%;">
+                  <col style="width:50%;">
+                  <tbody>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="video">
+							  <video width="100%" controls>
+								<source src="templates/input5b1.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock"><span class="image">
+                              <video width="100%" controls>
+								<source src="templates/input5b2.mp4" type="video/mp4">
+								Your browser does not support HTML5 video.
+							  </video>
+							  </span>
+                           </p>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 5b video 1 -->
+									<source src="output/part5b/output5b1.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                        <td class="tableblock halign-left valign-top" >
+                           <p class="tableblock">
+                              <span class="image">
+                                <video width="100%" controls>
+									<!-- MAKE CHANGES HERE: Part 5b video 2 -->
+									<source src="output/part5b/output5b2.mp4" type="video/mp4">
+									<!-- END CHANGES -->
+									Your browser does not support HTML5 video.
+								 </video>
+                              </span>
+                           </p>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+			   <div class="listingblock">
+                  <div class="title">Source</div>
+                  <div class="content monospaced">
+                     <!-- MAKE CHANGES HERE: Part 5b code -->
+                     <pre>
+// Insert your code here
+					 </pre>
+                     <!-- END CHANGES -->
+                  </div>
+               </div>
+         
+         
+      <div id="footer">
+         <div id="footer-text">
+            Last updated 2018-02-08
+         </div>
+      </div>
+   </body>
+</html>
