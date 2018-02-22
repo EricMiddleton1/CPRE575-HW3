@@ -13,7 +13,6 @@ enum class ProjectionType {
 	Vertical
 };
 
-using Path = std::vector<std::vector<cv::Point>>;
 
 void changeColor(const cv::Mat& inframe, cv::Mat& outFrame, const cv::Scalar& oldColorMin,
 	const cv::Scalar& oldColorMax, const cv::Scalar& newColor, const std::string& window = {});
@@ -26,7 +25,66 @@ std::vector<int> getPeaks(const std::vector<int>&, unsigned int minDistance = 1)
 template<ProjectionType Dir>
 std::vector<std::pair<int, int>> locate(const cv::Mat& mask, int minArea);
 
-void drawPath(cv::Mat& frame, const Path& path, const cv::Scalar& color, int thickness = 3);
+class Trackable {
+public:
+	Trackable(cv::Scalar&& minColor, cv::Scalar&& maxColor, cv::Scalar&& pathColor, int minSize)
+		:	minColor_{std::move(minColor)}
+		,	maxColor_{std::move(maxColor)}
+		,	pathColor_{std::move(pathColor)}
+		,	minSize_{minSize}
+		,	pathBreak_{true} {
+	}
+
+	void process(const cv::Mat& frame) {
+		cv::Mat mask;
+		
+		cv::inRange(frame, minColor_, maxColor_, mask);
+		auto playerX = locate<ProjectionType::Horizontal>(mask, minSize_),
+			playerY = locate<ProjectionType::Vertical>(mask, minSize_);
+
+		if(playerX.size() != 1 || playerY.size() != 1) {
+			//Start new curve in path (needed for when pac-man jumps from left to right)
+			pathBreak_ = true;
+		}
+		else {
+			cv::Point pos{playerX[0].first, playerY[0].first};
+
+			if(pathBreak_ == true) {
+				//Start new curve if new point is sufficiently far from last point
+				if(path_.empty() || dist(path_.back()[path_.back().size()-1], pos) > MAX_SEPARATION) {
+					path_.emplace_back();
+				}
+				pathBreak_ = false;
+			}
+			//Place current point into current curve
+			path_.back().push_back(pos);
+		}
+	}
+
+	void drawPath(cv::Mat& frame, int thickness = 3) {
+		for(const auto& curve : path_) {
+			if(curve.size() > 1) {
+				for(size_t i = 0; i < (curve.size()-1); ++i) {
+					cv::line(frame, curve[i], curve[i+1], pathColor_, thickness);
+				}
+			}
+		}
+	}
+
+private:
+	static constexpr float MAX_SEPARATION = 50;
+
+	float dist(const cv::Point& p1, const cv::Point& p2) {
+		float dx = p2.x - p1.x, dy = p2.y - p1.y;
+		return std::sqrt(dx*dx + dy*dy);
+	}
+
+	cv::Scalar minColor_, maxColor_, pathColor_;
+	int minSize_;
+	std::vector<std::vector<cv::Point>> path_;
+	bool pathBreak_;
+};
+
 
 int main(int argc, char* argv[]) {
 	
@@ -68,8 +126,13 @@ int main(int argc, char* argv[]) {
 	int pelletCount = -1, lastPelletCount = 0;
 	int pelletTime = 6;
 
-	Path playerPath;
-	bool pathBreak = true;
+	Trackable player{{25, 100, 100}, {35, 255, 255}, {0, 255, 255}, 10};
+	std::vector<Trackable> ghosts = {
+		{{80, 100, 200}, {100, 255, 255}, {255, 255, 0}, 20},		//Blue
+		{{140, 40, 200}, {170, 80, 255}, {239, 185, 255}, 20},	//Pink
+		{{10, 140, 200}, {30, 160, 255}, {95, 177, 243}, 20},		//Orange
+		{{0, 200, 200}, {10, 255, 255}, {0, 0, 255}, 20}				//Red
+	};
 
 	// Loop to read from input one frame at a time, write text on frame, and
 	// copy to output video
@@ -134,27 +197,14 @@ int main(int argc, char* argv[]) {
 			cv::Scalar(255, 255, 255));
 
 		//Detect Pac-Man and plot his trajectory
-		cv::Mat playerMask;
-		auto gameWindow = frame_hsv(cv::Rect(0, 0, frameSize.width, frameSize.height - 20));
-		cv::inRange(gameWindow, cv::Scalar(25, 100, 100), cv::Scalar(35, 255, 255), playerMask);
-		auto playerX = locate<ProjectionType::Horizontal>(playerMask, 10),
-			playerY = locate<ProjectionType::Vertical>(playerMask, 10);
+		player.process(frame_hsv(cv::Rect(0, 0, frameSize.width, frameSize.height - 20)));
+		player.drawPath(frame);
 
-		if(playerX.size() != 1 || playerY.size() != 1) {
-			//Start new curve in path (needed for when pac-man jumps from left to right)
-			pathBreak = true;
+		//Detect ghosts and plot their trajectories
+		for(auto& ghost : ghosts) {
+			ghost.process(frame_hsv(cv::Rect(0, 0, frameSize.width, frameSize.height - 20)));
+			ghost.drawPath(frame);
 		}
-		else {
-			if(pathBreak == true) {
-				//Start new curve
-				playerPath.emplace_back();
-				pathBreak = false;
-			}
-			//Place current point into current curve
-			playerPath.back().emplace_back(playerX[0].first, playerY[0].first);
-		}
-
-		drawPath(frame, playerPath, cv::Scalar(0, 255, 255));
 
 		cv::imshow("Frame", frame);
 		output_cap.write(frame);
@@ -249,15 +299,4 @@ std::vector<std::pair<int, int>> locate(const cv::Mat& mask, int minArea) {
 	}
 
 	return blobs;
-}
-
-
-void drawPath(cv::Mat& frame, const Path& path, const cv::Scalar& color, int thickness) {
-	for(const auto& curve : path) {
-		if(curve.size() > 1) {
-			for(size_t i = 0; i < (curve.size()-1); ++i) {
-				cv::line(frame, curve[i], curve[i+1], color, thickness);
-			}
-		}
-	}
 }
